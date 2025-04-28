@@ -1,0 +1,16 @@
+FROM golang:latest 
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go install github.com/air-verse/air@latest
+RUN go get -u github.com/gorilla/mux
+RUN go get -u github.com/google/uuid
+RUN go get -u gorm.io/gorm
+RUN go get -u gorm.io/driver/postgres
+RUN go get -u github.com/joho/godotenv
+RUN go mod download
+RUN go mod tidy
+
+EXPOSE 8000
+CMD [ "air" ]
