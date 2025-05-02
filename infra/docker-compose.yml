@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  front:
+    image: node:${NODE_VERSION}
+  db:
+    image: postgres:${POSTGRES_VERSION}
+  backend:
+    image: backend:${VERSION}
+    build:
+      context: ../backend
+      dockerfile: Dockerfile.dev
+  envoy:
+    image: envoy:${VERSION}
+    build:
+      dockerfile: Dockerfile
+      context: ../envoy
+  languagetool:
+    image: elestio/languagetool:${LANGUAGETOOL_VERSION}
+  wordnet:
+    build:
+      context: ../wordnet

@@ -1,0 +1,7 @@
+version: '3.8'
+networks:
+  application:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${DOCKER_HOST_SUBNET}

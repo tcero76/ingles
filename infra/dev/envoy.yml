@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  envoy:
+    container_name: envoy
+    tty: true
+    stdin_open: true
+    environment:
+     - ENVOY_HOST=0.0.0.0
+     - ENVOY_PORT=$PORT
+    ports:
+      - $PORT:$PORT
+    volumes:
+      - ../envoy/envoy.yaml:/tmpl/envoy.yaml
+    networks:
+      - application
+    depends_on:
+      - front
+      - backend

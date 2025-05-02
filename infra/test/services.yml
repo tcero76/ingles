@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  front:
+    restart: always
+    container_name: front
+    volumes:
+      - ../front/:/app
+    working_dir: /app
+    command: npm run dev
+    environment:
+      - CI=true
+      - NODE_OPTIONS=--openssl-legacy-provider
+      - REACT_APP_API_URL=http://localhost:${PORT}
+      - VITE_API_URL=http://localhost:${PORT}
+    ports:
+      - "5173:5173"
+    networks:
+      - application
+  backend:
+    restart: always
+    container_name: back
+    stdin_open: true
+    tty: true
+    working_dir: /app
+    environment:
+      - DB_HOST=$DB_HOST
+      - DB_USER=$DB_USER
+      - DB_PASSWORD=$DB_PASSWORD
+      - DB_NAME=$DB_NAME
+      - DB_PORT=$DB_PORT
+      - SSLMODE=$SSLMODE
+      - TIMEZONE=$TIMEZONE
+      - PORT=8000
+    volumes:
+      - ../backend/:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - application

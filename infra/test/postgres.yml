@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  db:
+    restart: always
+    container_name: db
+    volumes:
+      - ../database/test:/var/lib/postgresql/data
+      - ./test/DBInit.sql/:/docker-entrypoint-initdb.d/DBInit.sql
+    environment: 
+      TZ: ${TIMEZONE}
+      PGTZ: ${TIMEZONE}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    networks:
+      - application

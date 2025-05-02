@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  languagetool:
+    container_name: lt
+    volumes:
+      - ../languageTool:/ngrams
+    ports:
+      - 172.17.0.1:8010:8010
+    environment:
+      - langtool_languageModel=/ngrams
+      - Java_Xms=512m
+      - Java_Xmx=1g
+    networks:
+      - application
+  wordnet:
+    container_name: wn
+    ports:
+      - 5000:5000
+    volumes:
+      - ../wordnet/:/app/
+    networks:
+      - application
