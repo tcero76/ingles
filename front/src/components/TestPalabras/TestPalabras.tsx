@@ -52,9 +52,9 @@ const TestPalabras = () => {
                     <p className="card-text">Frase: { hide ? 'oculto' :  word.palabra.frase }</p>
                     <p className="card-text">Significado: { hide ? 'oculto' :  word.palabra.significado }</p>
                     <div>
-                        <button type="button" className="btn btn-primary mx-2" onClick={()=> onClickResultado(ResultadoEnum.EXITO)}>Recordada</button>
+                        <button type="button" className="btn btn-success mx-2" onClick={()=> onClickResultado(ResultadoEnum.EXITO)}>Recordada</button>
                         <button type="button" className="btn btn-danger mx-2" onClick={() => onClickResultado(ResultadoEnum.FALLO)}>Fallo</button>
-                        <button type="button" className="btn btn-success mx-2" onClick={() => onClickVer()}>Ver</button>
+                        <button type="button" className="btn btn-primary mx-2" onClick={() => onClickVer()}>Ver</button>
                     </div>
                 </div>
                 <div className="card-body">

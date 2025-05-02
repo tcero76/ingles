@@ -1,6 +1,6 @@
 import { useReducer } from "react";
 import { ActionType, DispatchType, type ErrorType, type StateType } from "../model/ValidationForm";
-import { CategoriaEnum } from "../model/types";
+import { CategoriaEnum } from "../model/httpModel";
 
 type UseFormType<T extends Record<string, string>> = {
     validateField:(form:T) => Partial<Record<keyof T, ErrorType>>

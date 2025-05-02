@@ -1,4 +1,5 @@
 import { JSX, ReactNode } from "react";
+import { TablePageType } from "./httpModel";
 
 export const AvisosStyle = {
     INFO: {
@@ -63,4 +64,7 @@ export type FormRef = {
     initForm:() => void
 }
 
-export interface FormProps {}
+export interface FormProps {
+    getData: (page:number, row:number) => void
+    tablePage:TablePageType
+}

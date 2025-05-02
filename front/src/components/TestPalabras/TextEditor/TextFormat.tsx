@@ -1,4 +1,6 @@
-import { useRef, FC } from 'react'
+import { useRef, FC, useState, useEffect } from 'react'
+import { BehaviorSubject, switchMap, from, debounceTime } from 'rxjs';
+import * as bootstrap from 'bootstrap'
 
 const storeCaretPosition = (editor:HTMLDivElement):number => {
     const selection = window.getSelection();
@@ -28,8 +30,8 @@ const restoreCaretPosition = (element:HTMLDivElement, offset:number) => {
     if (currentNode) {
       range.setStart(currentNode, offset - currentOffset);
       range.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(range);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
     }
   };
 
@@ -37,9 +39,15 @@ type TextFormatProps = {
   searchWord:(words:string[]) => void
   highlight:(text:string) => Promise<string>
 }
+type TextAndPos = {
+  text:string
+  pos:number
+}
 
 const TextFormat:FC<TextFormatProps> = ({ highlight, searchWord }) => {
+  const [textAndPos, setTextAndPos ] = useState<TextAndPos>({text:'', pos:0})
   const editorRef = useRef<HTMLDivElement>(document.createElement('div'));
+  const text$ = useRef<BehaviorSubject<TextAndPos>>(new BehaviorSubject({ text:'', pos:0})).current
   const onKey = () => {
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) return;
@@ -72,11 +80,30 @@ const TextFormat:FC<TextFormatProps> = ({ highlight, searchWord }) => {
       if(wordArray.length)
         searchWord(wordArray)
   }
+  useEffect(()=> {
+    const switched$ = text$.pipe(
+      debounceTime(400),
+      switchMap(({ text, pos }) => from(highlight(text)
+        .then((highlighted:string) => ({ text: highlighted, pos }))))
+      )
+    .subscribe((resp) => setTextAndPos({text:resp.text ,pos:resp.pos}))
+    return () => switched$.unsubscribe()
+  },[])
+  useEffect(() => {
+    const editor = editorRef.current;
+    restoreCaretPosition(editor, textAndPos.pos);
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach(tooltipTriggerEl => {
+      new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  }, [textAndPos])
   const handleChange = async () => {
     const editor = editorRef.current;
-    const caretOffset = storeCaretPosition(editor);
-    editor.innerHTML = await highlight(editor.innerText)
-    restoreCaretPosition(editor, caretOffset);
+    const tP = {
+      text:editor.innerText, pos:storeCaretPosition(editor)
+    }
+    setTextAndPos(tP)
+    text$.next(tP)
   };
     return (
         <div>
@@ -86,6 +113,7 @@ const TextFormat:FC<TextFormatProps> = ({ highlight, searchWord }) => {
             contentEditable
             onKeyUp={onKey}
             onInput={handleChange}
+            dangerouslySetInnerHTML={{ __html: textAndPos.text}}
             style={{ border: '1px solid #ccc', padding: '10px', minHeight: '100px' }}
           />
           <style>{`

@@ -17,7 +17,8 @@ const TextEditor = () => {
             const end = start + match.length;
             const error = newHtml.slice(start, end);
             const tooltip = match.message + "\nSugerencias: " + (match.replacements.map(r => r.value).join(", ") || "Ninguna");
-            const span = `<span class="highlight" contenteditable="true" title="${tooltip}">${error}</span>`; //
+            const span = `<span class="highlight" contenteditable="true" class="btn btn-secondary" data-bs-toggle="tooltip"
+              data-bs-placement="bottom" data-bs-title="${tooltip}">${error}</span>`; //
             newHtml = newHtml.slice(0, start) + span + newHtml.slice(end);
         }
         return newHtml;
@@ -25,7 +26,6 @@ const TextEditor = () => {
     return (<div>
                 <TextFormat highlight={highlight} searchWord={searchWord}/>
                 {alertas.map((alerta,idx) => {
-                    console.log("🚀 ~ {alertas.map ~ alerta:", alerta)
                     if(alerta) return <Diccionario key={idx} word={alerta}/>
                 })}
             </div>)
