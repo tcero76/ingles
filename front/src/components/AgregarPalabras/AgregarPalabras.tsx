@@ -27,9 +27,9 @@ const AgregarPalabras = () => {
         getData(tableState?.page, tableState?.limit)
     },[])    
     const onClickShowModal = () => {
-        const contenido = <Form ref={formRef}/>
+        const contenido = <Form ref={formRef} getData={getData} tablePage={tableState}/>
         formRef.current.initForm()
-        contextDialog?.modalShow({ 
+        contextDialog?.modalShow({
             contenido, 
             onClickSave:() => formRef.current.onClickForm(),
             header:"Registro Palabras"

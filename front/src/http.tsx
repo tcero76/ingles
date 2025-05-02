@@ -4,7 +4,8 @@ import {
     type GetPalabraResType,
     type TestPayloadType,
     type LangToolType,
-    type WordNetType } from "./model/httpModel"
+    type WordNetType, 
+    CategoriaEnum} from "./model/httpModel"
 
 export const getPalabra = ():Promise<AxiosResponse<GetPalabraResType>> => {
     return axios.get('/api/test/palabras')
@@ -18,12 +19,12 @@ export const getPage = (page:number, rows:number):Promise<AxiosResponse<TablePag
     return axios.get(`/api/palabras?page=${page}&rows=${rows}`)
 }
 
-export const putPalabra = (palabra:string, frase:string, significado:string):Promise<AxiosResponse<GetPalabraResType>> => {
+export const putPalabra = (palabra:string, frase:string, significado:string, categoria:CategoriaEnum):Promise<AxiosResponse<GetPalabraResType>> => {
     return axios.put(`${import.meta.env.VITE_API_URL}/api/`, {
         palabra,
         frase,
         significado,
-        categoria: "PREPOSICION"
+        categoria
     })
 }
 

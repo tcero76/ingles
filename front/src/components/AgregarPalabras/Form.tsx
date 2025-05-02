@@ -67,17 +67,19 @@ const validateField = (form:FormDataType):Partial<Record<keyof FormDataType, Err
         significado:{ ...validated.significado , touch: true }
 }
 }
-const Form = forwardRef<FormRef,FormProps>(({}, ref:ForwardedRef<FormRef>) => {
+const Form = forwardRef<FormRef,FormProps>(({getData, tablePage}, ref:ForwardedRef<FormRef>) => {
     const contextDialog = useDialog();
     const [state, dispatch] = useForm<FormDataType>({validateField,initialState})
-    const { palabra, frase, significado} = state.formData
+    const { palabra, frase, significado, categoria } = state.formData
+    const { errors } = state;
     useImperativeHandle(ref,() =>({
         onClickForm:() => {
             if(state.isValid) {
-                putPalabra(palabra, frase, significado)
+                putPalabra(palabra, frase, significado, categoria)
                 .then(() => {
                     contextDialog?.modalHide()
                     contextDialog?.showMsg({ msg: "Palabra almacenda", tipo: AvisosStyle.INFO })
+                    getData(tablePage.page, tablePage.limit)
                 })
                 .catch(res => {
                     contextDialog?.showMsg({ msg: res.data.message, tipo: AvisosStyle.ERROR})
@@ -97,13 +99,19 @@ const Form = forwardRef<FormRef,FormProps>(({}, ref:ForwardedRef<FormRef>) => {
           payload: { name, value }, 
         })
       };
-      const { formData, errors } = state;
+      const handleSelect = (e:React.ChangeEvent<HTMLSelectElement>) => {
+          const { name, value } = e.target;
+          dispatch({
+            type: ActionType.UPDATE_FIELD,
+            payload: { name, value }, 
+          })
+        };
     return (<form className="p-3" style={{border: '#eee solid 0.1px'}}>
                 <div className="mb-3">
                     <label htmlFor="idPalabra" className="form-label">Palabra</label>
                     <input id="idPalabra" type="text" className={"form-control" + errors.palabra?.format} name="palabra"
                         onChange={handleChange}
-                        value={formData.palabra}
+                        value={palabra}
                     ></input>
                     <div className="invalid-feedback">
                         {errors.palabra?.message}
@@ -113,7 +121,7 @@ const Form = forwardRef<FormRef,FormProps>(({}, ref:ForwardedRef<FormRef>) => {
                     <label htmlFor="idFrase" className="form-label">Frase</label>
                     <input id="idFrase" type="text" className={"form-control" + errors.frase?.format} name="frase"
                         onChange={handleChange}
-                        value={formData.frase}
+                        value={frase}
                     ></input>
                     <div className="invalid-feedback">
                         {errors.frase?.message}
@@ -123,7 +131,7 @@ const Form = forwardRef<FormRef,FormProps>(({}, ref:ForwardedRef<FormRef>) => {
                     <label htmlFor="idSignificado" className="form-label">Significado</label>
                     <input id="idSignificado" type="text" className={"form-control" + errors.significado?.format} name="significado"
                         onChange={handleChange}
-                        value={formData.significado}
+                        value={significado}
                     ></input>
                     <div className="invalid-feedback">
                         {errors.significado?.message}
@@ -131,9 +139,11 @@ const Form = forwardRef<FormRef,FormProps>(({}, ref:ForwardedRef<FormRef>) => {
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="validationDefault04" className="form-label">State</label>
-                    <select className="form-select" id="validationDefault04" required>
-                    <option selected disabled value="">Choose...</option>
-                    {Object.entries(CategoriaEnum).map(([key,value]) => <option key={key} value={key}>{value}</option>)}
+                    <select className="form-select" id="validationDefault04" name="categoria"
+                        onChange={handleSelect}
+                    required>
+                        <option selected disabled value="">Choose...</option>
+                        {Object.entries(CategoriaEnum).map(([key,value]) => <option key={key} value={key}>{value}</option>)}
                     </select>
                 </div>
             </form>);
