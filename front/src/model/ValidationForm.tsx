@@ -20,10 +20,12 @@ type PayloadType = {
 export enum ActionType {
     UPDATE_FIELD,
     RESET_FORM,
-    TOUCH_ALL
+    TOUCH_ALL,
+    VALID_DUPLICATE
 }
 
 export type DispatchType = 
     { type:ActionType.UPDATE_FIELD, payload:PayloadType} |
     { type:ActionType.RESET_FORM } |
-    { type:ActionType.TOUCH_ALL }
+    { type:ActionType.TOUCH_ALL } |
+    { type:ActionType.VALID_DUPLICATE, payload:boolean }

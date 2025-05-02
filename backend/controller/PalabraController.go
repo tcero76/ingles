@@ -22,11 +22,17 @@ func (p PalabraController) PutPalabra(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		palabra := model.Palabras{}
 		json.NewDecoder(r.Body).Decode(&palabra)
-		fmt.Print(palabra)
 		if len(palabra.Frase) == 0 || len(palabra.Palabra) == 0 || len(palabra.Significado) == 0 || len(palabra.Categoria) == 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Header().Set("Content-Type", "application/json")
 			res := command.PutPalabraRes{Message: "Datos errados"}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+		if p.getPalabra(palabra.Palabra, db) {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Header().Set("Content-Type", "application/json")
+			res := command.PutPalabraRes{Message: "Palabra duplicada"}
 			json.NewEncoder(w).Encode(res)
 			return
 		}
@@ -39,17 +45,10 @@ func (p PalabraController) PutPalabra(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-func (p PalabraController) GetPalabra(db *gorm.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("GETPALABRA: Inició el Controller")
-		vars := mux.Vars(r)
-		palabra := vars["palabra"]
-		palabraRepo := repo.PalabraRepository{}
-		encontrada := palabraRepo.GetPalabra(db, strings.ToLower(palabra))
-		fmt.Println(encontrada)
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(encontrada)
-	}
+func (p PalabraController) getPalabra(palabra string, db *gorm.DB) bool {
+	fmt.Println("GETPALABRA: Inició el Controller")
+	palabraRepo := repo.PalabraRepository{}
+	return palabraRepo.GetPalabra(db, strings.ToLower(palabra))
 }
 
 func (p PalabraController) GetPalabras(db *gorm.DB) http.HandlerFunc {

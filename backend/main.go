@@ -26,7 +26,6 @@ func main() {
 
 	r.HandleFunc("/", palabraController.PutPalabra(db)).Methods("PUT")
 	r.HandleFunc("/palabras", palabraController.GetPalabras(db)).Methods("GET").Queries("rows", "{rows}").Queries("page", "{page}")
-	r.HandleFunc("/palabras", palabraController.GetPalabra(db)).Methods("GET").Queries("palabra", "{palabra}")
 	r.HandleFunc("/test/palabras", palabraController.PutTestPalabra(db)).Methods("PUT")
 	r.HandleFunc("/test/palabras", palabraController.GetTestPalabra(db)).Methods("GET")
 

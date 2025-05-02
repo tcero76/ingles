@@ -19,6 +19,10 @@ export const getPage = (page:number, rows:number):Promise<AxiosResponse<TablePag
     return axios.get(`/api/palabras?page=${page}&rows=${rows}`)
 }
 
+export const getPalabraValid = (palabra:string):Promise<AxiosResponse<boolean>> => {
+    return axios.get(`/api/palabras?palabra=${palabra}`)
+}
+
 export const putPalabra = (palabra:string, frase:string, significado:string, categoria:CategoriaEnum):Promise<AxiosResponse<GetPalabraResType>> => {
     return axios.put(`${import.meta.env.VITE_API_URL}/api/`, {
         palabra,

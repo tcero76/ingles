@@ -27,7 +27,6 @@ func (b PalabraRepository) PutPalabra(db *gorm.DB, palabra model.Palabras) uint 
 func (b PalabraRepository) GetPalabra(db *gorm.DB, palabraBuscada string) bool {
 	palabra := model.Palabras{}
 	db.Select("palabra").Where("palabra = ?", palabraBuscada).Find(&palabra)
-	fmt.Println(palabra)
 	return palabra.Palabra != ""
 }
 

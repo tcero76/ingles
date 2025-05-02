@@ -1,11 +1,12 @@
 import { useImperativeHandle, ForwardedRef, forwardRef } from 'react'
-import { putPalabra } from '../../http'
+import { getPalabraValid, putPalabra } from '../../http'
 import { useDialog } from '../../contexts/dialogContext'
 import { AvisosStyle, FormProps,  type FormRef } from '../../model/types'
 import { ActionType, type ErrorType,type StateType } from '../../model/ValidationForm'
 import useForm from '../../hooks/useForm'
 import { z } from 'zod';
 import { CategoriaEnum } from '../../model/httpModel'
+import { AxiosResponse } from 'axios'
 
 const initialState:StateType<FormDataType,ErrorType> = {
     formData: {
@@ -82,7 +83,7 @@ const Form = forwardRef<FormRef,FormProps>(({getData, tablePage}, ref:ForwardedR
                     getData(tablePage.page, tablePage.limit)
                 })
                 .catch(res => {
-                    contextDialog?.showMsg({ msg: res.data.message, tipo: AvisosStyle.ERROR})
+                    contextDialog?.showMsg({ msg: res.response.data.message, tipo: AvisosStyle.ERROR})
                 })
             } else {
                 dispatch({ type: ActionType.TOUCH_ALL });
