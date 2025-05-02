@@ -2,7 +2,7 @@
  - Apoyo para ampliar vocabulario inglés que incorpora modelos IA que corrige errores gramaticales.
 
 # ¿Porqué una organización le debería llamar la atención este demo?
- - Practicas SOLID, separa la lógica de negocio de implementaciones de bajo nivel como Modals o Toasts.
+ - Programación SOLID, separa la lógica de negocio de implementaciones de bajo nivel como Modals o Toasts.
 # Demo
 ![demo](infra/img/demo.GIF)
 # Características
