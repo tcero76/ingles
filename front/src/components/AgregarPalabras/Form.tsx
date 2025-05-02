@@ -13,7 +13,7 @@ const initialState:StateType<FormDataType,ErrorType> = {
         palabra: '',
         frase: '',
         significado: '',
-        categoria:CategoriaEnum.ADVERBIO
+        categoria: ''
     },
     errors: {
         palabra: {
@@ -42,13 +42,14 @@ const initialState:StateType<FormDataType,ErrorType> = {
 const validate = z.object({
     palabra: z.string().min(1),
     frase: z.string().min(1),
-    significado: z.string().min(1)
+    significado: z.string().min(1),
+    categoria: z.string().min(1)
 })
 type FormDataType = {
     palabra:string
     frase:string
     significado:string
-    categoria:CategoriaEnum
+    categoria:CategoriaEnum | ''
 }
 const validateField = (form:FormDataType):Partial<Record<keyof FormDataType, ErrorType>> => {
     const validated = {
@@ -60,12 +61,16 @@ const validateField = (form:FormDataType):Partial<Record<keyof FormDataType, Err
         { message:'Valor es requerido' , format:' is-invalid' },
         significado: validate.pick({ significado:true }).safeParse({ significado:form.significado }).success? 
         { message:'' , format:" is-valid" } :
+        { message:'Valor es requerido' , format:' is-invalid' },
+        categoria: validate.pick({ categoria:true }).safeParse({ categoria:form.categoria }).success? 
+        { message:'' , format:" is-valid" } :
         { message:'Valor es requerido' , format:' is-invalid' }
     }
     return {
         palabra:{ ...validated.palabra , touch: true },
         frase:{ ...validated.frase , touch: true },
-        significado:{ ...validated.significado , touch: true }
+        significado:{ ...validated.significado , touch: true },
+        categoria:{ ...validated.categoria , touch: true }
 }
 }
 const Form = forwardRef<FormRef,FormProps>(({getData, tablePage}, ref:ForwardedRef<FormRef>) => {
@@ -138,14 +143,17 @@ const Form = forwardRef<FormRef,FormProps>(({getData, tablePage}, ref:ForwardedR
                         {errors.significado?.message}
                     </div>
                 </div>
-                <div className="col-md-3">
-                    <label htmlFor="validationDefault04" className="form-label">State</label>
-                    <select className="form-select" id="validationDefault04" name="categoria"
-                        onChange={handleSelect}
-                    required>
-                        <option selected disabled value="">Choose...</option>
+                <div className="md-3">
+                    <label htmlFor="idCategoria" className="form-label">State</label>
+                    <select className={"form-control" + errors.categoria?.format} id="idCategoria" name="categoria"
+                        onChange={handleSelect} value={categoria}
+                        required>
+                        <option defaultValue key={'0'} value="">Choose...</option>
                         {Object.entries(CategoriaEnum).map(([key,value]) => <option key={key} value={key}>{value}</option>)}
                     </select>
+                    <div className="invalid-feedback">
+                        {errors.categoria?.message}
+                    </div>
                 </div>
             </form>);
 })
