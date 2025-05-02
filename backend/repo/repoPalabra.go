@@ -24,8 +24,14 @@ func (b PalabraRepository) PutPalabra(db *gorm.DB, palabra model.Palabras) uint 
 	return palabra.ID
 }
 
-func (b PalabraRepository) GetPalabra(db *gorm.DB, palabras []model.Palabras, page int, rows int) model.Pagination {
-	fmt.Println(page)
+func (b PalabraRepository) GetPalabra(db *gorm.DB, palabraBuscada string) bool {
+	palabra := model.Palabras{}
+	db.Select("palabra").Where("palabra = ?", palabraBuscada).Find(&palabra)
+	fmt.Println(palabra)
+	return palabra.Palabra != ""
+}
+
+func (b PalabraRepository) GetPalabras(db *gorm.DB, palabras []model.Palabras, page int, rows int) model.Pagination {
 	pagination := model.Pagination{Page: page, Limit: rows}
 	db.Scopes(paginate(palabras, &pagination, db)).Find(&palabras)
 	pagination.Rows = palabras
