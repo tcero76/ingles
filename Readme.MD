@@ -4,7 +4,7 @@
 # ¿Porqué una organización le debería llamar la atención este demo?
  - Programación SOLID, separa la lógica de negocio de implementaciones de bajo nivel como Modals o Toasts.
 # Demo
-![demo](infra/img/demo.GIF)
+![demo](./infra/img/demo.GIF)
 # Características
 - Backend programado en Go.
 - Front hecho en React-typescript.
