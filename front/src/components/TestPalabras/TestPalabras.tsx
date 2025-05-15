@@ -1,11 +1,11 @@
-import { useState, useLayoutEffect} from 'react'
+import { useState, useLayoutEffect, useRef} from 'react'
 import { getPalabra, putTestPalabra } from '../../http'
 import { AxiosResponse } from 'axios'
-import { AvisosStyle } from '../../model/types'
+import { AvisosStyle, TextEditorType } from '../../model/types'
 import { type GetPalabraResType, CategoriaEnum, ResultadoEnum, StatusEnum} from '../../model/httpModel'
 import { useDialog } from '../../contexts/dialogContext'
 import TextEditor from './TextEditor/TextEditor'
-  const inicialWordState:GetPalabraResType = {
+const inicialWordState:GetPalabraResType = {
     palabra: {
         ID: 0,
         palabra: '',
@@ -23,6 +23,7 @@ import TextEditor from './TextEditor/TextEditor'
 const TestPalabras = () => {
     const [word, setWord ] = useState<GetPalabraResType>(inicialWordState)
     const [hide, setHide] = useState<boolean>(true)
+    const textEditorRef = useRef<TextEditorType>({cleanInput:()=>null})
     const context = useDialog()
     useLayoutEffect(() => {
         getPalabra()
@@ -35,6 +36,7 @@ const TestPalabras = () => {
             .then((res:AxiosResponse<GetPalabraResType>) => {
                 setWord(res.data)
                 setHide(true)
+                textEditorRef.current.cleanInput()
                 context?.showMsg({
                     msg: 'Datos enviados',
                     tipo: resultado ? AvisosStyle.INFO : AvisosStyle.ERROR
@@ -58,7 +60,7 @@ const TestPalabras = () => {
                     </div>
                 </div>
                 <div className="card-body">
-                <TextEditor/></div>
+                <TextEditor ref={textEditorRef}/></div>
             </div>
 }
 

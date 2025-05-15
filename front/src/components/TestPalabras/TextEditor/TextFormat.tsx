@@ -1,6 +1,7 @@
-import { useRef, FC, useState, useEffect } from 'react'
+import { useRef, FC, useState, useEffect, useImperativeHandle, ForwardedRef, forwardRef } from 'react'
 import { BehaviorSubject, switchMap, from, debounceTime } from 'rxjs';
 import * as bootstrap from 'bootstrap'
+import { TextAndPos, TextFormatProps, TextFormatType } from '../../../model/types';
 
 const storeCaretPosition = (editor:HTMLDivElement):number => {
     const selection = window.getSelection();
@@ -35,19 +36,15 @@ const restoreCaretPosition = (element:HTMLDivElement, offset:number) => {
     }
   };
 
-type TextFormatProps = {
-  searchWord:(words:string[]) => void
-  highlight:(text:string) => Promise<string>
-}
-type TextAndPos = {
-  text:string
-  pos:number
-}
-
-const TextFormat:FC<TextFormatProps> = ({ highlight, searchWord }) => {
+const TextFormat = forwardRef<TextFormatType,TextFormatProps>(({ highlight, searchWord, ...props}:TextFormatProps , ref:ForwardedRef<TextFormatType>) => {
   const [textAndPos, setTextAndPos ] = useState<TextAndPos>({text:'', pos:0})
   const editorRef = useRef<HTMLDivElement>(document.createElement('div'));
   const text$ = useRef<BehaviorSubject<TextAndPos>>(new BehaviorSubject({ text:'', pos:0})).current
+  useImperativeHandle(ref,() => ({
+    cleanInput:() => {
+      setTextAndPos({text:'', pos:0})
+    }
+  }))
   const onKey = () => {
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) return;
@@ -115,6 +112,7 @@ const TextFormat:FC<TextFormatProps> = ({ highlight, searchWord }) => {
             onInput={handleChange}
             dangerouslySetInnerHTML={{ __html: textAndPos.text}}
             style={{ border: '1px solid #ccc', padding: '10px', minHeight: '100px' }}
+            {...props}
           />
           <style>{`
               .highlight {
@@ -124,6 +122,6 @@ const TextFormat:FC<TextFormatProps> = ({ highlight, searchWord }) => {
             `}</style>
         </div>
       );
-}
+})
 
 export default TextFormat

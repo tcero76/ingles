@@ -1,4 +1,4 @@
-import { JSX, ReactNode } from "react";
+import { type ComponentPropsWithoutRef, JSX, ReactNode } from "react";
 import { TablePageType } from "./httpModel";
 
 export const AvisosStyle = {
@@ -67,4 +67,22 @@ export type FormRef = {
 export interface FormProps {
     getData: (page:number, row:number) => void
     tablePage:TablePageType
+}
+
+export type TextFormatProps = {
+  searchWord:(words:string[]) => void
+  highlight:(text:string) => Promise<string>
+} & ComponentPropsWithoutRef<'div'>
+
+export type TextAndPos = {
+  text:string
+  pos:number
+}
+
+export type TextFormatType = {
+  cleanInput:() =>  void
+}
+
+export type TextEditorType = {
+  cleanInput:() => void
 }

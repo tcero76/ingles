@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { CategoriaEnum, TableProps } from '../../model/httpModel'
+import { CategoriaEnum, type TableProps } from '../../model/httpModel'
 const Table:FC<TableProps> = ({data} :TableProps) => {
     const renderRow = () => {
         return data?.map((d,idx) => {
@@ -25,6 +25,7 @@ const Table:FC<TableProps> = ({data} :TableProps) => {
             <th scope="col">Frase</th>
             <th scope="col">Level</th>
             <th scope="col">Categoria</th>
+            <th scope="col"></th>
         </tr>
         </thead>
         {renderBody()}

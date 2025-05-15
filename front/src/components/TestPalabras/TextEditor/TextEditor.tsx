@@ -1,10 +1,15 @@
-import { useState } from 'react';
+import { ComponentPropsWithoutRef, ForwardedRef, forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import TextFormat from './TextFormat';
 import Diccionario from "./Diccionario";
 import { postCheck } from '../../../http';
+import { TextEditorType, TextFormatType } from '../../../model/types';
 
-const TextEditor = () => {
+const TextEditor = forwardRef<TextEditorType,ComponentPropsWithoutRef<'div'>>(({ ...props },ref:ForwardedRef<TextEditorType>) => {
   const [alertas, setAlertas] = useState<string[]>([])
+  const textFormatRef = useRef<TextFormatType>({ cleanInput:() => null });
+  useImperativeHandle(ref,()=>({
+    cleanInput:() => textFormatRef.current.cleanInput()
+  }))
     const searchWord = (wordArray:string[]) => {
         setAlertas(wordArray)
       }
@@ -24,11 +29,11 @@ const TextEditor = () => {
         return newHtml;
     }
     return (<div>
-                <TextFormat highlight={highlight} searchWord={searchWord}/>
+                <TextFormat highlight={highlight} searchWord={searchWord} ref={textFormatRef} { ...props }/>
                 {alertas.map((alerta,idx) => {
                     if(alerta) return <Diccionario key={idx} word={alerta}/>
                 })}
             </div>)
-};
+});
 
 export default TextEditor;
