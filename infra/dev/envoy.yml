@@ -5,14 +5,13 @@ services:
     tty: true
     stdin_open: true
     environment:
-     - ENVOY_HOST=0.0.0.0
+     - ENVOY_HOST=${HOST_EXTERNO}
      - ENVOY_PORT=$PORT
-    ports:
-      - $PORT:$PORT
     volumes:
       - ../envoy/envoy.yaml:/tmpl/envoy.yaml
     networks:
-      - application
+      application:
+          ipv4_address: ${HOST_EXTERNO}
     depends_on:
       - front
       - backend
