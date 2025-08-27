@@ -7,8 +7,10 @@ import (
 
 	"vocabackend/controller"
 	"vocabackend/driver"
+	"vocabackend/repo"
 
 	"github.com/gorilla/mux"
+	glog "github.com/labstack/gommon/log"
 	"gorm.io/gorm"
 )
 
@@ -21,13 +23,16 @@ func logRequest(r *http.Request) {
 func main() {
 	r := mux.NewRouter()
 	db = driver.ConnectDB()
+	glog.SetLevel(glog.INFO)
 
-	palabraController := controller.PalabraController{}
+	palabraRepo := &repo.PalabraRepository{Db: db}
 
-	r.HandleFunc("/", palabraController.PutPalabra(db)).Methods("PUT")
-	r.HandleFunc("/palabras", palabraController.GetPalabras(db)).Methods("GET").Queries("rows", "{rows}").Queries("page", "{page}")
-	r.HandleFunc("/test/palabras", palabraController.PutTestPalabra(db)).Methods("PUT")
-	r.HandleFunc("/test/palabras", palabraController.GetTestPalabra(db)).Methods("GET")
+	palabraController := controller.PalabraController{PalabraRepo: palabraRepo}
+
+	r.HandleFunc("/", palabraController.PutPalabra()).Methods("PUT")
+	r.HandleFunc("/palabras", palabraController.GetPalabras()).Methods("GET").Queries("rows", "{rows}").Queries("page", "{page}")
+	r.HandleFunc("/test/palabras", palabraController.PutTestPalabra()).Methods("PUT")
+	r.HandleFunc("/test/palabras", palabraController.GetTestPalabra()).Methods("GET")
 
 	http.Handle("/", r)
 	srv := &http.Server{

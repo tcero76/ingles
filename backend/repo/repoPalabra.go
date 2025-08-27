@@ -1,18 +1,29 @@
 package repo
 
 import (
-	"fmt"
 	"math"
 	"time"
 	"vocabackend/model"
 
+	"github.com/labstack/gommon/log"
 	"gorm.io/gorm"
 )
 
-type PalabraRepository struct{}
+type IPalabraRepository interface {
+	PutPalabra(palabra model.Palabras) uint
+	GetPalabra(palabraBuscada string) bool
+	GetPalabras(palabras []model.Palabras, page int, rows int) model.Pagination
+	GetTestPalabra() (model.Palabras, int, int)
+	FindPalabra(id int) model.Palabras
+	UpdatePalabra(palabra *model.Palabras) bool
+}
 
-func (b PalabraRepository) PutPalabra(db *gorm.DB, palabra model.Palabras) uint {
-	result := db.Create(&model.Palabras{
+type PalabraRepository struct {
+	Db *gorm.DB
+}
+
+func (b PalabraRepository) PutPalabra(palabra model.Palabras) uint {
+	result := b.Db.Create(&model.Palabras{
 		Palabra:     palabra.Palabra,
 		Frase:       palabra.Frase,
 		Significado: palabra.Significado,
@@ -20,26 +31,29 @@ func (b PalabraRepository) PutPalabra(db *gorm.DB, palabra model.Palabras) uint 
 		Level:       1,
 		Categoria:   palabra.Categoria,
 	})
-	fmt.Println(result)
+	log.Debug("PALABRA: creada es: ", result)
 	return palabra.ID
 }
 
-func (b PalabraRepository) GetPalabra(db *gorm.DB, palabraBuscada string) bool {
+func (b PalabraRepository) GetPalabra(palabraBuscada string) bool {
 	palabra := model.Palabras{}
-	db.Select("palabra").Where("palabra = ?", palabraBuscada).Find(&palabra)
+	b.Db.Select("palabra").Where("palabra = ?", palabraBuscada).Find(&palabra)
+	log.Info("PALABRA: encontrada es: ", palabra)
 	return palabra.Palabra != ""
 }
 
-func (b PalabraRepository) GetPalabras(db *gorm.DB, palabras []model.Palabras, page int, rows int) model.Pagination {
+func (b PalabraRepository) GetPalabras(palabras []model.Palabras, page int, rows int) model.Pagination {
 	pagination := model.Pagination{Page: page, Limit: rows}
-	db.Scopes(paginate(palabras, &pagination, db)).Find(&palabras)
+	b.Db.Scopes(paginate(palabras, &pagination, b.Db)).Find(&palabras)
+	log.Debug("PALABRAS: encontradas son: ", palabras)
 	pagination.Rows = palabras
 	return pagination
 }
 
-func (b PalabraRepository) GetTestPalabra(db *gorm.DB) (model.Palabras, int, int) {
+func (b PalabraRepository) GetTestPalabra() (model.Palabras, int, int) {
 	palabras := []model.Palabras{}
-	db.Find(&palabras).Where("status = ? ", "PENDIENTE")
+	b.Db.Find(&palabras).Where("status = ? ", "PENDIENTE")
+	log.Debug("PALABRAS: encontradas son: ", palabras)
 	size := 0
 	for _, p := range palabras {
 		if test(&p) {
@@ -62,15 +76,16 @@ func test(palabra *model.Palabras) bool {
 	return time.Now().After(palabra.UpdatedAt.Add(factor * 24 * time.Hour))
 }
 
-func (b PalabraRepository) FindPalabra(db *gorm.DB, id int) model.Palabras {
+func (b PalabraRepository) FindPalabra(id int) model.Palabras {
 	palabra := model.Palabras{}
-	// fmt.Printf("ID:FINDPALABRA El valor es: %d \n", id)
-	db.Where("id", id).First(&palabra)
+	b.Db.Where("id", id).First(&palabra)
+	log.Debug("PALABRA: encontrada es: ", palabra)
 	return palabra
 }
 
-func (b PalabraRepository) UpdatePalabra(db *gorm.DB, palabra *model.Palabras) bool {
-	db.Save(palabra)
+func (b PalabraRepository) UpdatePalabra(palabra *model.Palabras) bool {
+	b.Db.Save(palabra)
+	log.Debug("PALABRA: actualizada es: ", palabra)
 	return true
 }
 
@@ -81,7 +96,6 @@ func paginate(value interface{}, pagination *model.Pagination, db *gorm.DB) func
 	totalPages := int(math.Ceil(float64(totalRows) / float64(pagination.Limit)))
 	pagination.TotalPages = totalPages
 	return func(db *gorm.DB) *gorm.DB {
-		// fmt.Println(pagination.GetOffset())
 		return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit())
 	}
 }
