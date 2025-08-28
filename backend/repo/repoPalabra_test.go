@@ -19,21 +19,21 @@ func TestMain(m *testing.M) {
 func TestGetPalabra(t *testing.T) {
 	db := driver.ConnectDB()
 	var rows = 1
-	service := PalabraRepository{Db: db}
-	result := service.GetPalabra("at")
+	palabraRepo := PalabraRepository{Db: db}
+	result := palabraRepo.GetPalabra("at")
 	if result {
 		t.Logf("LOG: Resultó y el esperado era %d", rows)
 	}
 }
 
-// func TestFindPalabra(t *testing.T) {
-// 	db := driver.ConnectDB()
-// 	palabraRepo := PalabraRepository{}
-// 	id := 33
-// 	result := palabraRepo.FindPalabra(db, id)
-// 	if int(result.ID) != id {
-// 		t.Errorf("ERROR: Resultó %d y el esperado era %d \n", result.ID, id)
-// 	} else {
-// 		t.Logf("LOG: Resultó %d y el esperado era %d\n", result.ID, id)
-// 	}
-// }
+func TestFindPalabra(t *testing.T) {
+	db := driver.ConnectDB()
+	palabraRepo := PalabraRepository{Db: db}
+	id := 33
+	result := palabraRepo.FindPalabra(id)
+	if int(result.ID) != id {
+		t.Errorf("ERROR: Resultó %d y el esperado era %d \n", result.ID, id)
+	} else {
+		t.Logf("LOG: Resultó %d y el esperado era %d\n", result.ID, id)
+	}
+}
